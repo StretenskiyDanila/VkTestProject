@@ -1,5 +1,8 @@
 package com.example.vktestproject.models;
 
+import lombok.Data;
+
+@Data
 public class ResponsePhotosAlbum {
 
     private Long id;

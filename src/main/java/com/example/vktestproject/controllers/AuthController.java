@@ -9,7 +9,6 @@ import com.example.vktestproject.validations.ResponseErrorValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
-@PreAuthorize("permitAll()")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -28,7 +26,9 @@ public class AuthController {
     public ResponseEntity<Object> signUn(@Valid @RequestBody SignInRequest request,
                                                             BindingResult bindingResult) {
         ResponseEntity<Object> errors = responseErrorValidation.mapValidationService(bindingResult);
-        if (!ObjectUtils.isEmpty(errors)) return errors;
+        if (!ObjectUtils.isEmpty(errors)) {
+            return errors;
+        }
 
         JwtAuthenticationResponse response = authenticationService.signIn(request);
         return ResponseEntity.ok(response);

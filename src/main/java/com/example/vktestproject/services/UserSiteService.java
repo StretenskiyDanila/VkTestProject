@@ -1,7 +1,7 @@
 package com.example.vktestproject.services;
 
+import com.example.vktestproject.models.Album;
 import com.example.vktestproject.models.Post;
-import com.example.vktestproject.models.ResponseAlbumUser;
 import com.example.vktestproject.models.ResponseTodosUser;
 import com.example.vktestproject.models.UserSite;
 
@@ -10,13 +10,13 @@ import java.util.Map;
 public interface UserSiteService {
 
     UserSite[] getAllUsers(Map<String, String> map);
-    UserSite getUserById(String userId);
-    ResponseAlbumUser[] getUsersWithAlbums(String userId);
-    Post[] getUsersWithPosts(String userId);
-    ResponseTodosUser[] getUserWithTodos(String userId);
+    UserSite getUserById(Long userId);
+    Album[] getUsersWithAlbums(Long userId);
+    Post[] getUsersWithPosts(Long userId);
+    ResponseTodosUser[] getUserWithTodos(Long userId);
     UserSite create(UserSite userSite);
-    UserSite update(String userId, UserSite userSite);
-    UserSite patching(String userId, UserSite userSite);
-    UserSite delete(String userId);
+    UserSite update(Long userId, UserSite userSite);
+    UserSite patching(Long userId, UserSite userSite);
+    UserSite delete(Long userId);
 
 }

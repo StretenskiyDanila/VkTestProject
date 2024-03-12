@@ -8,11 +8,11 @@ import java.util.Map;
 public interface PostService {
 
     Post[] getAllPosts(Map<String, String> map);
-    Post getPostById(String postId);
-    ResponseCommentPost[] getPostWithComment(String postId);
+    Post getPostById(Long postId);
+    ResponseCommentPost[] getPostWithComment(Long postId);
     Post create(Post post);
-    Post update(String postId, Post post);
-    Post patching(String postId, Post post);
-    Post delete(String postId);
+    Post update(Long postId, Post post);
+    Post patching(Long postId, Post post);
+    Post delete(Long postId);
 
 }

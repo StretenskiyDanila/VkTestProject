@@ -8,11 +8,11 @@ import java.util.Map;
 public interface AlbumService {
 
     Album[] getAllAlbums(Map<String, String> map);
-    Album getAlbumById(String albumId);
-    ResponsePhotosAlbum[] getAlbumsWithPhotos(String albumId);
+    Album getAlbumById(Long albumId);
+    ResponsePhotosAlbum[] getAlbumsWithPhotos(Long albumId);
     Album create(Album album);
-    Album update(String albumId, Album album);
-    Album patching(String albumId, Album album);
-    Album delete(String albumId);
+    Album update(Long albumId, Album album);
+    Album patching(Long albumId, Album album);
+    Album delete(Long albumId);
 
 }

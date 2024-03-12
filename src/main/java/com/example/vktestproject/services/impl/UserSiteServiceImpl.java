@@ -1,11 +1,14 @@
 package com.example.vktestproject.services.impl;
 
+import com.example.vktestproject.models.Album;
 import com.example.vktestproject.models.Post;
-import com.example.vktestproject.models.ResponseAlbumUser;
 import com.example.vktestproject.models.ResponseTodosUser;
 import com.example.vktestproject.models.UserSite;
 import com.example.vktestproject.services.UserSiteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -16,54 +19,54 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "user-site")
 public class UserSiteServiceImpl implements UserSiteService {
 
     private static final String URI_USERS = "https://jsonplaceholder.typicode.com/users";
 
     private final RestTemplateWork restTemplateWork;
 
-    @Cacheable("users-get")
+    @Cacheable
     @Override
     public UserSite[] getAllUsers(Map<String, String> map) {
         return restTemplateWork.getObject(URI_USERS, map, UserSite[].class);
     }
 
-    @Cacheable("users-get")
+    @Cacheable(key = "#userId")
     @Override
-    public UserSite getUserById(String userId) {
+    public UserSite getUserById(Long userId) {
         return restTemplateWork.getObject(URI_USERS + "/" + userId, UserSite.class);
 
     }
 
-    @Cacheable("users-albums")
+    @Cacheable(cacheNames = "album", key = "#userId")
     @Override
-    public ResponseAlbumUser[] getUsersWithAlbums(String userId) {
-        return restTemplateWork.getObject(URI_USERS + "/" + userId + "/albums", ResponseAlbumUser[].class);
-
+    public Album[] getUsersWithAlbums(Long userId) {
+        return restTemplateWork.getObject(URI_USERS + "/" + userId + "/albums", Album[].class);
     }
 
-    @Cacheable("users-post")
+    @Cacheable(cacheNames = "post", key = "#userId")
     @Override
-    public Post[] getUsersWithPosts(String userId) {
+    public Post[] getUsersWithPosts(Long userId) {
         return restTemplateWork.getObject(URI_USERS + "/" + userId + "/posts", Post[].class);
     }
 
-    @Cacheable("users-todos")
+    @Cacheable(cacheNames = "todos", key = "#userId")
     @Override
-    public ResponseTodosUser[] getUserWithTodos(String userId) {
+    public ResponseTodosUser[] getUserWithTodos(Long userId) {
         return restTemplateWork.getObject(URI_USERS + "/" + userId + "/todos", ResponseTodosUser[].class);
 
     }
 
-    @Cacheable("users-create")
+    @Cacheable(key = "#userSite.id")
     @Override
     public UserSite create(UserSite userSite) {
         return restTemplateWork.postForObject(URI_USERS, userSite, UserSite.class);
     }
 
-    @Cacheable("users-update")
+    @CachePut(key = "#userId")
     @Override
-    public UserSite update(String userId, UserSite userSite) {
+    public UserSite update(Long userId, UserSite userSite) {
         HttpEntity<UserSite> http = new HttpEntity<>(userSite);
         ResponseEntity<UserSite> responseUser = restTemplateWork.exchange(
                 URI_USERS + "/" + userId,
@@ -74,15 +77,15 @@ public class UserSiteServiceImpl implements UserSiteService {
         return responseUser.getBody();
     }
 
-    @Cacheable("users-patching")
+    @CachePut(key = "#userId")
     @Override
-    public UserSite patching(String userId, UserSite userSite) {
+    public UserSite patching(Long userId, UserSite userSite) {
         return restTemplateWork.patchObject(URI_USERS + "/" + userId, userSite, UserSite.class);
     }
 
-    @Cacheable("users-delete")
+    @CacheEvict
     @Override
-    public UserSite delete(String userId) {
+    public UserSite delete(Long userId) {
         ResponseEntity<UserSite> responseUser =  restTemplateWork.exchange(
                 URI_USERS + "/" + userId,
                 HttpMethod.DELETE,

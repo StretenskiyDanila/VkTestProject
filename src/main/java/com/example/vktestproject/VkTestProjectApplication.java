@@ -9,7 +9,8 @@ import org.springframework.cache.annotation.EnableCaching;
 public class VkTestProjectApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VkTestProjectApplication.class, args);
+		SpringApplication springApplication = new SpringApplication(VkTestProjectApplication.class);
+		springApplication.run(args);
 	}
 
 }

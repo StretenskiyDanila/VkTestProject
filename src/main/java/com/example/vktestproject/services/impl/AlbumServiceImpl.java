@@ -1,10 +1,12 @@
 package com.example.vktestproject.services.impl;
 
-
 import com.example.vktestproject.models.Album;
 import com.example.vktestproject.models.ResponsePhotosAlbum;
 import com.example.vktestproject.services.AlbumService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,39 +17,40 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "album")
 public class AlbumServiceImpl implements AlbumService {
 
     private static final String URI_ALBUMS = "https://jsonplaceholder.typicode.com/albums";
 
     private final RestTemplateWork restTemplateWork;
 
-    @Cacheable("album-get")
+    @Cacheable
     @Override
     public Album[] getAllAlbums(Map<String, String> map) {
         return restTemplateWork.getObject(URI_ALBUMS, map, Album[].class);
     }
 
-    @Cacheable("album-get")
+    @Cacheable(key = "#albumId")
     @Override
-    public Album getAlbumById(String albumId) {
+    public Album getAlbumById(Long albumId) {
         return restTemplateWork.getObject(URI_ALBUMS + "/" + albumId, Album.class);
     }
 
-    @Cacheable("album-get")
+    @Cacheable(cacheNames = "photos", key = "#albumId")
     @Override
-    public ResponsePhotosAlbum[] getAlbumsWithPhotos(String albumId) {
+    public ResponsePhotosAlbum[] getAlbumsWithPhotos(Long albumId) {
         return restTemplateWork.getObject(URI_ALBUMS + "/" + albumId + "/photos", ResponsePhotosAlbum[].class);
     }
 
-    @Cacheable("album-create")
+    @Cacheable(key = "#album.id")
     @Override
     public Album create(Album album) {
         return restTemplateWork.postForObject(URI_ALBUMS, album, Album.class);
     }
 
-    @Cacheable("album-update")
+    @CachePut(key = "#albumId")
     @Override
-    public Album update(String albumId, Album album) {
+    public Album update(Long albumId, Album album) {
         HttpEntity<Album> http = new HttpEntity<>(album);
         ResponseEntity<Album> responseAlbum = restTemplateWork.exchange(
                 URI_ALBUMS + "/" + albumId,
@@ -58,15 +61,15 @@ public class AlbumServiceImpl implements AlbumService {
         return responseAlbum.getBody();
     }
 
-    @Cacheable("album-patching")
+    @CachePut(key = "#albumId")
     @Override
-    public Album patching(String albumId, Album album) {
+    public Album patching(Long albumId, Album album) {
         return restTemplateWork.patchObject(URI_ALBUMS + "/" + albumId, album, Album.class);
     }
 
-    @Cacheable("album-delete")
+    @CacheEvict(key = "#albumId")
     @Override
-    public Album delete(String albumId) {
+    public Album delete(Long albumId) {
         ResponseEntity<Album> responseAlbum = restTemplateWork.exchange(
                 URI_ALBUMS + "/" + albumId,
                 HttpMethod.DELETE,
